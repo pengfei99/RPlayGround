@@ -143,5 +143,19 @@ library('txtplot')
 txtplot(cars[,1], cars[,2], xlab = 'speed', ylab = 'distance')
 ```
 
+## 6. Manage an R package lifecycle
 
+```shell
+# install multiple package at once
+install.packages(c("ggplot2", "dplyr"))
+
+# update an R package
+update.packages('txtplot')
+
+# update all installed packages
+update.packages(ask = FALSE)
+
+# remove an R package
+remove.packages("ggplot2")
+```
 
