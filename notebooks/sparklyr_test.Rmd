@@ -1,0 +1,86 @@
+---
+title: "Create_Spark_on_yarn"
+author: "pengfei liu"
+date: "2023-12-14"
+output: html_document
+---
+
+## Step 1. Install and import packages
+
+```{r}
+library(sparklyr)
+library(dplyr)
+```
+
+## Step2: Setup env var
+
+```{r}
+Sys.setenv(SPARK_HOME="/home/pengfei/opt/spark-3.3.0")
+```
+### step3: Load the spark default conf
+
+Load the spark default conf, we can also overwrite the default conf
+
+
+```{r}
+conf <- spark_config()
+
+# Memory
+conf["sparklyr.shell.driver-memory"] <- "4g"
+
+# Cores
+conf["sparklyr.connect.cores.local"] <- 2
+```
+
+## Step4: Create a spark context
+
+If you encounter problems when you create the spark context, you can active the log of backend by runnging below
+command before the sparklyr command
+
+```{r}
+options(sparklyr.log.console = TRUE)
+```
+
+```{r}
+sc <- spark_connect(master = "local", config = conf)
+```
+
+## Step5: Read a csv as data frame
+
+```{r}
+source_df <- spark_read_csv(sc, path = "file:///home/pengfei/data_set/recette/clinical01.csv")
+```
+```{r}
+show(source_df)
+```
+```{r}
+user_sex_count <- source_df %>% group_by(sex) %>% count() 
+
+head(user_sex_count)
+```
+```{r}
+user_sex_count_bad <- source_df %>% group_by(sex) %>% count() %>% collect()
+
+```
+## Step6: Disconnect the spark context
+
+```{r}
+spark_disconnect(sc)
+```
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
